@@ -6,7 +6,7 @@ using Core.DynamicItems.Options;
 
 namespace Core.InfoLists.Options
 {
-    public class InfoListsQueryOptions
+    public class InfoListQueryOptions
     {
         public bool Id { get; set; } = true;
         public bool Name { get; set; } = false;
