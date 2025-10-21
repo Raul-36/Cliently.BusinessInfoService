@@ -18,7 +18,7 @@ namespace Infrastructure.InfoTexts.Repositories
     public class InfoTextMongoRepository : IInfoTextRepository
     {
         private readonly IMongoCollection<Business> businessCollection;
-        public InfoTextMongoRepository(IMapper mapper, IMongoDatabase database, string collectionName)
+        public InfoTextMongoRepository(IMongoDatabase database, string collectionName)
         {
             this.businessCollection = database.GetCollection<Business>(collectionName);
         }
