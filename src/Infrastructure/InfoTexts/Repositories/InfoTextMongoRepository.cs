@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Core.Businesses;
 using Core.Businesses.Models;
 using Core.InfoTexts.DTOs;
@@ -45,58 +44,76 @@ namespace Infrastructure.InfoTexts.Repositories
 
         public async Task<IEnumerable<InfoTextFlexDto>> GetAllByBusinessIdAsync(Guid businessId, InfoTextQueryOptions options)
         {
-            var business = await businessCollection.AsQueryable()
-                .FirstOrDefaultAsync(b => b.Id == businessId);
-            if (business == null)
-                throw new Exception($"Business with Id {businessId} not found.");
+            var filter = Builders<Business>.Filter.Eq(b => b.Id, businessId);
 
-            return business.Texts.Select(it => new InfoTextFlexDto
-            {
-                Id = options.Id ? it.Id : null,
-                Name = options.Name ? it.Name : null,
-                Text = options.Text ? it.Text : null
-            });
+            var projection = Builders<Business>.Projection.Expression(b =>
+                b.Texts.Select(t => new InfoTextFlexDto
+                {
+                    Id = options.Id ? t.Id : null,
+                    Name = options.Name ? t.Name : null,
+                    Text = options.Text ? t.Text : null
+                })
+            );
+
+            var infoTexts = await this.businessCollection
+                                     .Find(filter)
+                                     .Project(projection)
+                                     .FirstOrDefaultAsync();
+            if (infoTexts == null)
+                throw new KeyNotFoundException($"Texts in business with Id {businessId} not found.");
+            return infoTexts ?? Enumerable.Empty<InfoTextFlexDto>();
         }
 
         public async Task<InfoText> GetByIdAsync(Guid id)
         {
-            var businessWithText = await businessCollection.AsQueryable()
-                .FirstOrDefaultAsync(b => b.Texts.Any(t => t.Id == id));
+            var filter = Builders<Business>.Filter.ElemMatch(b => b.Texts, t => t.Id == id);
 
-            if (businessWithText == null)
-                throw new KeyNotFoundException($"InfoText with Id {id} not found.");
+            var projection = Builders<Business>.Projection.Expression(b =>
+                b.Texts.FirstOrDefault(t => t.Id == id)
+            );
 
-            var result = businessWithText.Texts.FirstOrDefault(t => t.Id == id);
+            var result = await businessCollection
+                .Find(filter)
+                .Project(projection)
+                .FirstOrDefaultAsync();
+
             if (result == null)
                 throw new KeyNotFoundException($"InfoText with Id {id} not found.");
 
             return result;
+
         }
 
         public async Task<InfoTextFlexDto> GetByIdAsync(Guid id, InfoTextQueryOptions options)
         {
-            var businessWithText = await businessCollection
-            .AsQueryable()
-            .FirstOrDefaultAsync(b => b.Texts.Any(t => t.Id == id));
+            var filter = Builders<Business>.Filter.ElemMatch(
+                b => b.Texts,
+                t => t.Id == id
+            );
 
-            if (businessWithText == null)
+            var projection = Builders<Business>.Projection.Expression(b =>
+                b.Texts
+                .Where(t => t.Id == id)
+                .Select(t => new InfoTextFlexDto
+                {
+                    Id = options.Id ? t.Id : null,
+                    Name = options.Name ? t.Name : null!,
+                    Text = options.Text ? t.Text : null!
+                })
+                .FirstOrDefault()
+            );
+
+            var infoText = await this.businessCollection
+                                     .Find(filter)
+                                     .Project(projection)
+                                     .FirstOrDefaultAsync();
+
+            if (infoText == null)
                 throw new KeyNotFoundException($"InfoText with Id {id} not found.");
 
-            var text = businessWithText.Texts
-                .FirstOrDefault(t => t.Id == id);
-
-            if (text == null)
-                throw new KeyNotFoundException($"InfoText with Id {id} not found.");
-
-            var infoTextDto = new InfoTextFlexDto
-            {
-                Id = options.Id ? text.Id : null,
-                Name = options.Name ? text.Name : null,
-                Text = options.Text ? text.Text : null
-            };
-
-            return infoTextDto;
+            return infoText;
         }
+
 
         public Task<InfoText> UpdateAsync(InfoText infoText)
         {
