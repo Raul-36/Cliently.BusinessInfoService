@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Core.DynamicItems.Options
 {
-    public class DynamicItemQueryOptions : Dictionary<string, bool>
+    public class DynamicItemQueryOptions
     {
+        public Dictionary<string, bool> Fields { get; set; } = new Dictionary<string, bool>();
         public DynamicItemQueryOptions()
         {
-            base.Add("Id", true);
+            this.Fields.Add("Id", true);
         }
     }
 }

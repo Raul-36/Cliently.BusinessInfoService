@@ -4,10 +4,10 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.DynamicItems.Models
+namespace Core.DynamicItems.Models;
+
+public class DynamicItem
 {
-    public class DynamicItem : DynamicObject
-    {
-        public Guid Id { get; set; }
-    }
+    public required Guid Id { get; set; }
+    public required Dictionary<string, object> Properties = new();
 }
