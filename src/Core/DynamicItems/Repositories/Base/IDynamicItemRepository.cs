@@ -10,10 +10,10 @@ namespace Core.DynamicItems.Repositories.Base
 {
     public interface IDynamicItemRepository
     {
-        public Task<IEnumerable<DynamicItem>> GetAllByListIdAsync(Guid listId, DynamicItemQueryOptions options);
+        public Task<IEnumerable<DynamicItemFlexDto>> GetAllByListIdAsync(Guid listId, DynamicItemQueryOptions options);
         public Task<DynamicItem> GetByIdAsync(Guid id);
         public Task<DynamicItemFlexDto> GetByIdAsync(Guid id, DynamicItemQueryOptions options);
-        public Task<DynamicItemFlexDto> AddAsync(DynamicItem DynamicItem, Guid listId);
+        public Task<DynamicItem> AddAsync(DynamicItem DynamicItem, Guid listId);
         public Task<DynamicItem> UpdateAsync(DynamicItem DynamicItem);
         public Task DeleteByIdAsync(Guid id);
     }

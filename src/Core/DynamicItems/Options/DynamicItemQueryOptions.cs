@@ -8,10 +8,8 @@ namespace Core.DynamicItems.Options
 {
     public class DynamicItemQueryOptions
     {
-        public Dictionary<string, bool> Fields { get; set; } = new Dictionary<string, bool>();
-        public DynamicItemQueryOptions()
-        {
-            this.Fields.Add("Id", true);
-        }
+        public bool Id { get; set; }
+        public required Dictionary<string, bool> Properties { get; set; } = new Dictionary<string, bool>();
+
     }
 }
