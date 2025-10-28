@@ -8,6 +8,8 @@ namespace Core.DynamicItems.Models;
 
 public class DynamicItem
 {
-    public required Guid Id { get; set; }
-    public required Dictionary<string, object> Properties = new();
+    public Guid Id { get; set; }
+    public required string Name { get; set; }
+    public Dictionary<string, object>? Properties;
+    public Guid ListId { get; set; }
 }

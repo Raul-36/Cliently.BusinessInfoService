@@ -11,7 +11,8 @@ namespace Core.Businesses.Models
     public class Business
     {
         public Guid Id { get; set; }
-        public IEnumerable<InfoList>? Lists { get; set; }
+        public required string Name { get; set; }
+        public required IEnumerable<InfoList> Lists { get; set; }
         public required IEnumerable<InfoText> Texts { get; set; }
     }
 }
