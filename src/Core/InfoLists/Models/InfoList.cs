@@ -11,7 +11,7 @@ namespace Core.InfoLists.Models
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
-        public required IEnumerable<DynamicItem> Items { get; set; }
+        public required IEnumerable<DynamicItem> Items { get; set; } = Enumerable.Empty<DynamicItem>();
         public Guid BusinessId { get; set; }
     }
 }
