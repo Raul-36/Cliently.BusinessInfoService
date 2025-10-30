@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.InfoTexts.Models;
 using Core.InfoTexts.Repositories.Base;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 

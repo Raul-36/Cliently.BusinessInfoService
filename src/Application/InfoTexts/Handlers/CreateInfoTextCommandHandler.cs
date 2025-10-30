@@ -5,29 +5,28 @@ using Application.InfoTexts.Commands;
 using Application.InfoTexts.DTOs.Responses;
 using Core.InfoTexts.Repositories.Base;
 using Core.InfoTexts.Models;
+using AutoMapper;
 
 namespace Application.InfoTexts.Handlers
 {
     public class CreateInfoTextCommandHandler : IRequestHandler<CreateInfoTextCommand, InfoTextResponse>
     {
         private readonly IInfoTextRepository infoTextRepository;
+        private readonly IMapper _mapper;
 
-        public CreateInfoTextCommandHandler(IInfoTextRepository infoTextRepository)
+        public CreateInfoTextCommandHandler(IInfoTextRepository infoTextRepository, IMapper mapper)
         {
             this.infoTextRepository = infoTextRepository;
+            _mapper = mapper;
         }
 
         public async Task<InfoTextResponse> Handle(CreateInfoTextCommand request, CancellationToken cancellationToken)
         {
-            var infoText = new InfoText {Name = request.InfoText.Name, Text = request.InfoText.Text };
+            var infoText = _mapper.Map<InfoText>(request.InfoText);
 
             var createdInfoText = await infoTextRepository.AddAsync(infoText);
 
-            return new InfoTextResponse
-            {
-                Id = createdInfoText.Id,
-                Text = createdInfoText.Text
-            };
+            return _mapper.Map<InfoTextResponse>(createdInfoText);
         }
     }
 }

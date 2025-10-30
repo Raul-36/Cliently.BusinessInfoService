@@ -217,7 +217,7 @@ csx/
 *.build.csdef
 
 # Microsoft Azure Emulator
-ecf/
+ecff/
 rcf/
 
 # Windows Store app package directories and files
@@ -261,7 +261,7 @@ Generated_Code/
 # to a newer Visual Studio version. Backup files are not needed,
 # because we have git ;-)
 _UpgradeReport_Files/
-Backup*/
+Backup*
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
@@ -482,3 +482,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+GEMINI.md

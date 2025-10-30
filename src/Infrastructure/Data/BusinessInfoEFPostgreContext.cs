@@ -10,7 +10,10 @@ using Core.InfoLists.Models;
 using Core.InfoTexts.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
+
+namespace Infrastructure.Data;
 public class BusinessInfoEFPostgreContext : DbContext
 {
     public DbSet<Business> Businesses { get; set; } = null!;
@@ -37,6 +40,12 @@ public class BusinessInfoEFPostgreContext : DbContext
                 v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, serializerOptions)
             );
 
+            var jsonComparer = new ValueComparer<Dictionary<string, object>>(
+                (c1, c2) => JsonSerializer.Serialize(c1, serializerOptions) == JsonSerializer.Serialize(c2, serializerOptions),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => JsonSerializer.Deserialize<Dictionary<string, object>>(JsonSerializer.Serialize(c, serializerOptions), serializerOptions)
+            );
+
             modelBuilder.Entity<DynamicItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -48,11 +57,12 @@ public class BusinessInfoEFPostgreContext : DbContext
 
                 entity.Property(e => e.Properties)
                     .HasConversion(jsonConverter)
-                    .HasColumnType("jsonb");
+                    .HasColumnType("jsonb")
+                    .Metadata.SetValueComparer(jsonComparer);
 
                 entity.Property(e => e.ListId)
                     .IsRequired();
-            }); 
+            });
         }
 
         modelBuilder.Entity<InfoList>(entity =>
@@ -60,8 +70,8 @@ public class BusinessInfoEFPostgreContext : DbContext
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd() 
-                .HasDefaultValueSql("gen_random_uuid()"); 
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("gen_random_uuid()");
 
             entity.HasMany(e => e.Items)
                 .WithOne()
@@ -87,7 +97,7 @@ public class BusinessInfoEFPostgreContext : DbContext
         modelBuilder.Entity<Business>(entity =>
         {
             entity.HasKey(e => e.Id);
-            
+
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("gen_random_uuid()");

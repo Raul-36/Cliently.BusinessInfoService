@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Businesses.Models;
 using Core.InfoLists.Models;
 using Core.InfoLists.Repositories.Base;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.InfoLists.Repositories

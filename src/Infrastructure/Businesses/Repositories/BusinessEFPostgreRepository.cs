@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Businesses.Models;
 using Core.Businesses.Repositories.Base;
 using Core.InfoTexts.Models;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Businesses.Repositories

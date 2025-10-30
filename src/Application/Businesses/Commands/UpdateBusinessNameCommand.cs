@@ -1,11 +1,10 @@
 using MediatR;
-using System;
+using Application.Businesses.DTOs.Requests;
 
 namespace Application.Businesses.Commands
 {
     public class UpdateBusinessNameCommand : IRequest<string>
     {
-        public Guid Id { get; set; }
-        public string NewName { get; set; }
+        public required UpdateBusinessRequest Business { get; set; }
     }
 }

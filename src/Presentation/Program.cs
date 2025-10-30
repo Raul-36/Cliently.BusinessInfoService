@@ -1,9 +1,45 @@
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data;
+using Application;
+using Core.Businesses.Repositories.Base;
+using Infrastructure.Businesses.Repositories;
+using Core.InfoLists.Repositories.Base;
+using Infrastructure.InfoLists.Repositories;
+using Core.InfoTexts.Repositories.Base;
+using Infrastructure.InfoTexts.Repositories;
+using Core.DynamicItems.Repositories.Base;
+using Infrastructure.DynamicItems.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
+
+// Configure PostgreSQL DbContext
+builder.Services.AddDbContext<BusinessInfoEFPostgreContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+using var scope = builder.Services.BuildServiceProvider().CreateScope();
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<BusinessInfoEFPostgreContext>();
+    if (dbContext.Database.GetPendingMigrations().Any())
+    {
+        dbContext.Database.Migrate();
+    }
+}
+// Register Repositories
+builder.Services.AddScoped<IBusinessRepository, BusinessEFPostgreRepository>();
+builder.Services.AddScoped<IInfoListRepository, InfoListEFPostgreRepository>();
+builder.Services.AddScoped<IInfoTextRepository, InfoTextEFPostgreRepository>();
+builder.Services.AddScoped<IDynamicItemRepository, DynamicItemEFPostgreRepository>();
 
 var app = builder.Build();
 
@@ -16,29 +52,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
