@@ -6,27 +6,34 @@ using Application.DynamicItems.DTOs.Responses;
 using Core.DynamicItems.Repositories.Base;
 using Core.DynamicItems.Models;
 using AutoMapper;
+using Application.Common;
 
 namespace Application.DynamicItems.Handlers
 {
-    public class UpdateDynamicItemCommandHandler : IRequestHandler<UpdateDynamicItemCommand, DynamicItemResponse>
+    public class UpdateDynamicItemCommandHandler : IRequestHandler<UpdateDynamicItemCommand, Result<DynamicItemResponse>>
     {
         private readonly IDynamicItemRepository dynamicItemRepository;
-        private readonly IMapper _mapper;
+        private readonly IMapper mapper;
 
         public UpdateDynamicItemCommandHandler(IDynamicItemRepository dynamicItemRepository, IMapper mapper)
         {
             this.dynamicItemRepository = dynamicItemRepository;
-            _mapper = mapper;
+            this.mapper = mapper;
         }
 
-        public async Task<DynamicItemResponse> Handle(UpdateDynamicItemCommand request, CancellationToken cancellationToken)
+        public async Task<Result<DynamicItemResponse>> Handle(UpdateDynamicItemCommand request, CancellationToken cancellationToken)
         {
-            var dynamicItem = _mapper.Map<DynamicItem>(request.DynamicItem);
+            var dynamicItem = this.mapper.Map<DynamicItem>(request.DynamicItem);
 
             var updatedDynamicItem = await dynamicItemRepository.UpdateAsync(dynamicItem);
 
-            return _mapper.Map<DynamicItemResponse>(updatedDynamicItem);
+            if (updatedDynamicItem == null)
+            {
+                return Result<DynamicItemResponse>.Failure("DynamicItem not found.");
+            }
+
+            var mappedResponse = this.mapper.Map<DynamicItemResponse>(updatedDynamicItem);
+            return Result<DynamicItemResponse>.Success(mappedResponse);
         }
     }
 }

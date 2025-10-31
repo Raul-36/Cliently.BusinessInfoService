@@ -3,10 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Businesses.Commands;
 using Core.Businesses.Repositories.Base;
+using Application.Common;
 
 namespace Application.Businesses.Handlers
 {
-    public class DeleteBusinessCommandHandler : IRequestHandler<DeleteBusinessCommand, bool>
+    public class DeleteBusinessCommandHandler : IRequestHandler<DeleteBusinessCommand, Result<bool>>
     {
         private readonly IBusinessRepository businessRepository;
 
@@ -15,10 +16,10 @@ namespace Application.Businesses.Handlers
             this.businessRepository = businessRepository;
         }
 
-        public async Task<bool> Handle(DeleteBusinessCommand request, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(DeleteBusinessCommand request, CancellationToken cancellationToken)
         {
             await businessRepository.DeleteByIdAsync(request.Id);
-            return true;
+            return Result<bool>.Success(true);
         }
     }
 }

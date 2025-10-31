@@ -32,6 +32,7 @@ using var scope = builder.Services.BuildServiceProvider().CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<BusinessInfoEFPostgreContext>();
     if (dbContext.Database.GetPendingMigrations().Any())
     {
+        
         dbContext.Database.Migrate();
     }
 }

@@ -46,25 +46,27 @@ namespace Infrastructure.InfoTexts.Repositories
                 .ToListAsync();
         }
 
-        public async Task<InfoText> GetByIdAsync(Guid id)
+        public async Task<InfoText?> GetByIdAsync(Guid id)
         {
             var entity = await context.InfoTexts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
-                throw new KeyNotFoundException($"InfoText with id '{id}' not found.");
+                return null;
 
             return entity;
         }
 
-        public async Task<InfoText> UpdateAsync(InfoText infoText)
+        public async Task<InfoText?> UpdateAsync(InfoText infoText)
         {
             var existing = await context.InfoTexts
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == infoText.Id);
             if (existing == null)
-                throw new KeyNotFoundException($"InfoText with id '{infoText.Id}' not found.");
+                return null;
+
+            infoText.BusinessId = existing.BusinessId;
 
             var updated = context.InfoTexts.Update(infoText).Entity;
             await context.SaveChangesAsync();

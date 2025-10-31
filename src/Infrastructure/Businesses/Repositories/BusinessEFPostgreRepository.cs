@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Businesses.Models;
 using Core.Businesses.Repositories.Base;
+using Core.InfoLists.Models;
 using Core.InfoTexts.Models;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,22 @@ namespace Infrastructure.Businesses.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<Business> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<Business>> GetAllAsync()
+        {
+            return await this.context.Businesses
+                .AsNoTracking()
+                .Select(x => new Business()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Lists = null!,
+                    Texts = null!
+
+                })
+                .ToListAsync();
+        }
+
+        public async Task<Business?> GetByIdAsync(Guid id)
         {
             var entity = await context.Businesses
                 .AsNoTracking()
@@ -48,7 +64,7 @@ namespace Infrastructure.Businesses.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Lists = x.Lists,
+                    Lists = x.Lists.ToList(),
                     Texts = x.Texts.Select(t => new InfoText()
                     {
                         Id = t.Id,
@@ -59,16 +75,16 @@ namespace Infrastructure.Businesses.Repositories
                 })
                 .FirstOrDefaultAsync();
             if (entity == null)
-                throw new KeyNotFoundException($"Business with id '{id}' not found.");
+                return null!;
 
             return entity;
         }
 
-        public async Task<string> SetNameByIdAsync(Guid id, string newName)
+        public async Task<string?> SetNameByIdAsync(Guid id, string newName)
         {
             var entity = await context.Businesses.FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
-                throw new KeyNotFoundException($"Business with id '{id}' not found.");
+                return null!;
 
             entity.Name = newName;
             await context.SaveChangesAsync();

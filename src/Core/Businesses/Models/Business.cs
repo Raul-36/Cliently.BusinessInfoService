@@ -12,7 +12,7 @@ namespace Core.Businesses.Models
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
-        public required IEnumerable<InfoList> Lists { get; set; } = Enumerable.Empty<InfoList>();
-        public required IEnumerable<InfoText> Texts { get; set; } = Enumerable.Empty<InfoText>();
+        public IEnumerable<InfoList> Lists { get; set; } = Enumerable.Empty<InfoList>();
+        public IEnumerable<InfoText> Texts { get; set; } = Enumerable.Empty<InfoText>();
     }
 }

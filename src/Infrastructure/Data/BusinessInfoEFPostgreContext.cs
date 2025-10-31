@@ -11,6 +11,7 @@ using Core.InfoTexts.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.VisualBasic;
 
 
 namespace Infrastructure.Data;
@@ -37,14 +38,19 @@ public class BusinessInfoEFPostgreContext : DbContext
             };
             var jsonConverter = new ValueConverter<Dictionary<string, object>, string>(
                 v => JsonSerializer.Serialize(v, serializerOptions),
-                v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, serializerOptions)
+                v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, serializerOptions)!//! 
             );
 
             var jsonComparer = new ValueComparer<Dictionary<string, object>>(
                 (c1, c2) => JsonSerializer.Serialize(c1, serializerOptions) == JsonSerializer.Serialize(c2, serializerOptions),
                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                c => JsonSerializer.Deserialize<Dictionary<string, object>>(JsonSerializer.Serialize(c, serializerOptions), serializerOptions)
+                c => JsonSerializer.Deserialize<Dictionary<string, object>>(JsonSerializer.Serialize(c, serializerOptions), serializerOptions)!//!
             );
+            if(jsonConverter is null)
+                throw new NullReferenceException(nameof(jsonConverter));
+            if(jsonComparer is null)
+                throw new NullReferenceException(nameof(jsonComparer));
+
 
             modelBuilder.Entity<DynamicItem>(entity =>
             {
@@ -56,7 +62,7 @@ public class BusinessInfoEFPostgreContext : DbContext
 
 
                 entity.Property(e => e.Properties)
-                    .HasConversion(jsonConverter)
+                    .HasConversion(jsonConverter!) //
                     .HasColumnType("jsonb")
                     .Metadata.SetValueComparer(jsonComparer);
 

@@ -3,7 +3,7 @@ using Application.InfoTexts.DTOs.Requests;
 using Application.InfoTexts.DTOs.Responses;
 using Core.InfoTexts.Models;
 
-namespace Application.MappingProfiles
+namespace Application.InfoTexts.MappingProfiles
 {
     public class InfoTextMappingProfile : Profile
     {
@@ -12,6 +12,7 @@ namespace Application.MappingProfiles
             CreateMap<CreateInfoTextRequest, InfoText>();
             CreateMap<UpdateInfoTextRequest, InfoText>();
             CreateMap<InfoText, InfoTextResponse>();
+            CreateMap<InfoText, ShortInfoTextResponse>();
         }
     }
 }

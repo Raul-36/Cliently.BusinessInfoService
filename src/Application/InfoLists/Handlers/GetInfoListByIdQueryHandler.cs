@@ -4,26 +4,32 @@ using System.Threading.Tasks;
 using Application.InfoLists.DTOs.Responses;
 using Application.InfoLists.Queries;
 using Core.InfoLists.Repositories.Base;
+using Application.Common;
+using AutoMapper;
 
 namespace Application.InfoLists.Handlers
 {
-    public class GetInfoListByIdQueryHandler : IRequestHandler<GetInfoListByIdQuery, InfoListResponse>
+    public class GetInfoListByIdQueryHandler : IRequestHandler<GetInfoListByIdQuery, Result<InfoListResponse>>
     {
         private readonly IInfoListRepository infoListRepository;
+        private readonly IMapper mapper;
 
-        public GetInfoListByIdQueryHandler(IInfoListRepository infoListRepository)
+
+        public GetInfoListByIdQueryHandler(IInfoListRepository infoListRepository, IMapper mapper)
         {
             this.infoListRepository = infoListRepository;
+            this.mapper = mapper;
         }
 
-        public async Task<InfoListResponse> Handle(GetInfoListByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<InfoListResponse>> Handle(GetInfoListByIdQuery request, CancellationToken cancellationToken)
         {
             var infoList = await infoListRepository.GetByIdAsync(request.Id);
             if (infoList == null)
             {
-                return null; // Or throw an exception
+                return Result<InfoListResponse>.Failure("InfoList not found.");
             }
-            return new InfoListResponse { Id = infoList.Id, Name = infoList.Name };
+            var mappedResponse = this.mapper.Map<InfoListResponse>(infoList);
+            return Result<InfoListResponse>.Success(mappedResponse);
         }
     }
 }

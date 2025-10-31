@@ -44,7 +44,7 @@ namespace Infrastructure.InfoLists.Repositories
                 .ToListAsync();
         }
 
-        public async Task<InfoList> GetByIdAsync(Guid id)
+        public async Task<InfoList?> GetByIdAsync(Guid id)
         {
             var entity = await context.InfoLists
                 .AsNoTracking()
@@ -52,12 +52,12 @@ namespace Infrastructure.InfoLists.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
-                throw new KeyNotFoundException($"InfoList with id '{id}' not found.");
+                return null;
 
             return entity;
         }
 
-        public async Task<string> SetNameByIdAsync(Guid id, string name)
+        public async Task<string?> SetNameByIdAsync(Guid id, string name)
         {
             var entity = await context.InfoLists.FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)

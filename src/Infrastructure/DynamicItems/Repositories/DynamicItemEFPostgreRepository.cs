@@ -53,27 +53,28 @@ namespace Infrastructure.DynamicItems.Repositories
                 .ToListAsync();
         }
 
-        public async Task<DynamicItem> GetByIdAsync(Guid id)
+        public async Task<DynamicItem?> GetByIdAsync(Guid id)
         {
             var entity = await context.DynamicItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
-                throw new KeyNotFoundException($"DynamicItem with id '{id}' not found.");
+                return null;
 
             return entity;
         }
 
-        public async Task<DynamicItem> UpdateAsync(DynamicItem dynamicItem)
+        public async Task<DynamicItem?> UpdateAsync(DynamicItem dynamicItem)
         {
             var existing = await context.DynamicItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == dynamicItem.Id);
 
             if (existing == null)
-                throw new KeyNotFoundException($"DynamicItem with id '{dynamicItem.Id}' not found.");
+                return null;
 
+            dynamicItem.ListId = existing.ListId;
             var updated = context.DynamicItems.Update(dynamicItem).Entity;
             await context.SaveChangesAsync();
 

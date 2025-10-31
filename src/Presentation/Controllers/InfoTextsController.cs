@@ -4,6 +4,7 @@ using Application.InfoTexts.Commands;
 using Application.InfoTexts.DTOs.Requests;
 using Application.InfoTexts.DTOs.Responses;
 using Application.InfoTexts.Queries;
+using Application.Common;
 
 namespace Presentation.Controllers
 {
@@ -25,7 +26,11 @@ namespace Presentation.Controllers
         {
             var command = new CreateInfoTextCommand { InfoText = request };
             var response = await this.mediator.Send(command);
-            return CreatedAtAction(nameof(GetInfoTextById), new { id = response.Id }, response);
+            if (response.IsSuccess)
+            {
+                return CreatedAtAction(nameof(GetInfoTextById), new { id = response.Value!.Id }, response.Value);
+            }
+            return BadRequest(response.Errors);
         }
 
         [HttpGet("{id}")]
@@ -35,39 +40,40 @@ namespace Presentation.Controllers
         {
             var query = new GetInfoTextByIdQuery { Id = id };
             var response = await this.mediator.Send(query);
-            if (response == null)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return Ok(response.Value);
             }
-            return Ok(response);
+            return NotFound(response.Errors);
         }
 
         [HttpGet("ByBusinessId/{businessId}")]
         [ProducesResponseType(typeof(IEnumerable<InfoTextResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllInfoTextsByBusinessId(Guid businessId)
         {
             var query = new GetAllInfoTextsByBusinessIdQuery { BusinessId = businessId };
             var response = await this.mediator.Send(query);
-            return Ok(response);
+            if (response.IsSuccess)
+            {
+                return Ok(response.Value);
+            }
+            return BadRequest(response.Errors);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateInfoText(Guid id, [FromBody] UpdateInfoTextRequest request)
+        public async Task<IActionResult> UpdateInfoText([FromBody] UpdateInfoTextRequest request)
         {
-            if (id != request.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
             var command = new UpdateInfoTextCommand { InfoText = request };
             var response = await this.mediator.Send(command);
-            if (response == null)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return NoContent();
             }
-            return NoContent();
+            return NotFound(response.Errors);
         }
 
         [HttpDelete("{id}")]
@@ -77,11 +83,11 @@ namespace Presentation.Controllers
         {
             var command = new DeleteInfoTextCommand { Id = id };
             var response = await this.mediator.Send(command);
-            if (!response)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return NoContent();
             }
-            return NoContent();
+            return NotFound(response.Errors);
         }
     }
 }

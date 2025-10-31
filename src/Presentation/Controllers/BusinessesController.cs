@@ -4,6 +4,7 @@ using Application.Businesses.Commands;
 using Application.Businesses.DTOs.Requests;
 using Application.Businesses.DTOs.Responses;
 using Application.Businesses.Queries;
+using Application.Common;
 
 namespace Presentation.Controllers
 {
@@ -25,7 +26,11 @@ namespace Presentation.Controllers
         {
             var command = new CreateBusinessCommand(request);
             var response = await this.mediator.Send(command);
-            return CreatedAtAction(nameof(GetBusinessById), new { id = response.Id }, response);
+            if (response.IsSuccess)
+            {
+                return CreatedAtAction(nameof(GetBusinessById), new { id = response.Value!.Id }, response.Value);
+            }
+            return BadRequest(response.Errors);
         }
 
         [HttpGet("{id}")]
@@ -35,30 +40,34 @@ namespace Presentation.Controllers
         {
             var query = new GetBusinessByIdQuery(id);
             var response = await this.mediator.Send(query);
-            if (response == null)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return Ok(response.Value);
             }
+            return NotFound(response.Errors);
+        }
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ShortBusinessResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllBusinesses()
+        {
+            var query = new GetAllBusinessesQuery();
+            var response = await this.mediator.Send(query);
             return Ok(response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("name")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateBusinessName(Guid id, [FromBody] UpdateBusinessRequest request)
+        public async Task<IActionResult> UpdateBusinessName([FromBody] UpdateBusinessRequest request)
         {
-            if (id != request.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
             var command = new UpdateBusinessNameCommand { Business = request };
             var response = await this.mediator.Send(command);
-            if (response == null)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return NoContent();
             }
-            return NoContent();
+            return NotFound(response.Errors);
         }
 
         [HttpDelete("{id}")]
@@ -68,11 +77,11 @@ namespace Presentation.Controllers
         {
             var command = new DeleteBusinessCommand(){ Id = id };
             var response = await this.mediator.Send(command);
-            if (!response)
+            if (response.IsSuccess)
             {
-                return NotFound();
+                return NoContent();
             }
-            return NoContent();
+            return NotFound(response.Errors);
         }
     }
 }
