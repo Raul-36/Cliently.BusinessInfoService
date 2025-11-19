@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Application.DynamicItems.DTOs.Responses;
 using Application.DynamicItems.Queries;
 using Core.DynamicItems.Repositories.Base;
-using Application.Common;
 using AutoMapper;
+using Application.DynamicItems.Exceptions;
 
 namespace Application.DynamicItems.Handlers
 {
-    public class GetDynamicItemByIdQueryHandler : IRequestHandler<GetDynamicItemByIdQuery, Result<DynamicItemResponse>>
+    public class GetDynamicItemByIdQueryHandler : IRequestHandler<GetDynamicItemByIdQuery, DynamicItemResponse>
     {
         private readonly IDynamicItemRepository dynamicItemRepository;
         private readonly IMapper mapper;
@@ -20,16 +20,14 @@ namespace Application.DynamicItems.Handlers
             this.mapper = mapper;
         }
 
-        public async Task<Result<DynamicItemResponse>> Handle(GetDynamicItemByIdQuery request, CancellationToken cancellationToken)
+        public async Task<DynamicItemResponse> Handle(GetDynamicItemByIdQuery request, CancellationToken cancellationToken)
         {
             var dynamicItem = await dynamicItemRepository.GetByIdAsync(request.Id);
             if (dynamicItem == null)
-            {
-                return Result<DynamicItemResponse>.Failure($"DynamicItem with Id {request.Id} not found.");
-            }
+                throw new DynamicItemNotFoundException(request.Id);
 
             var mappedResponse = this.mapper.Map<DynamicItemResponse>(dynamicItem);
-            return Result<DynamicItemResponse>.Success(mappedResponse);
+            return mappedResponse;
         }
     }
 }

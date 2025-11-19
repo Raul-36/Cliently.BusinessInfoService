@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Application.InfoLists.Commands;
 using Core.InfoLists.Repositories.Base;
 using AutoMapper;
-using Application.Common;
+using Application.InfoLists.Exceptions;
 
 namespace Application.InfoLists.Handlers
 {
-    public class UpdateInfoListNameCommandHandler : IRequestHandler<UpdateInfoListNameCommand, Result<string>>
+    public class UpdateInfoListNameCommandHandler : IRequestHandler<UpdateInfoListNameCommand, string>
     {
         private readonly IInfoListRepository infoListRepository;
 
@@ -17,14 +17,14 @@ namespace Application.InfoLists.Handlers
             this.infoListRepository = infoListRepository;
         }
 
-        public async Task<Result<string>> Handle(UpdateInfoListNameCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(UpdateInfoListNameCommand request, CancellationToken cancellationToken)
         {
             var newName = await infoListRepository.SetNameByIdAsync(request.InfoList.Id, request.InfoList.Name);
             if (newName == null)
             {
-                return Result<string>.Failure("InfoList not found.");
+                throw new InfoListNotFoundException(request.InfoList.Id);
             }
-            return Result<string>.Success(newName);
+            return newName;
         }
     }
 }

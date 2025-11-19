@@ -4,7 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.DynamicItems.Models;
+namespace Core.DynamicItems.Entities;
 
 public class DynamicItem
 {

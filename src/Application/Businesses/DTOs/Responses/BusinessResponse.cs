@@ -1,7 +1,7 @@
 using Application.InfoLists.DTOs.Responses;
 using Application.InfoTexts.DTOs.Responses;
-using Core.InfoLists.Models;
-using Core.InfoTexts.Models;
+using Core.InfoLists.Entities;
+using Core.InfoTexts.Entities;
 
 namespace Application.Businesses.DTOs.Responses
 {

@@ -4,7 +4,8 @@ using Application.DynamicItems.Commands;
 using Application.DynamicItems.DTOs.Requests;
 using Application.DynamicItems.DTOs.Responses;
 using Application.DynamicItems.Queries;
-using Application.Common;
+using Application.DynamicItems.Exceptions;
+
 
 namespace Presentation.Controllers
 {
@@ -20,74 +21,59 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(DynamicItemResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateDynamicItem([FromBody] CreateDynamicItemRequest request)
         {
             var command = new CreateDynamicItemCommand { DynamicItem = request };
             var response = await this.mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return CreatedAtAction(nameof(GetDynamicItemById), new { id = response.Value!.Id }, response.Value);
-            }
-            return BadRequest(response.Errors);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(DynamicItemResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetDynamicItemById(Guid id)
         {
-            var query = new GetDynamicItemByIdQuery { Id = id };
-            var response = await this.mediator.Send(query);
-            if (response.IsSuccess)
+            try
             {
-                return Ok(response.Value);
+                var query = new GetDynamicItemByIdQuery { Id = id };
+                var response = await this.mediator.Send(query);
+                return Ok(response);
             }
-            return NotFound(response.Errors);
+            catch (DynamicItemNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet("ByList/{listId}")]
-        [ProducesResponseType(typeof(IEnumerable<DynamicItemResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllDynamicItemsByListId(Guid listId)
         {
             var query = new GetAllDynamicItemsByListIdQuery { ListId = listId };
             var response = await this.mediator.Send(query);
-            if (response.IsSuccess)
-            {
-                return Ok(response.Value);
-            }
-            return BadRequest(response.Errors);
+            return Ok(response);
         }
 
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateDynamicItem([FromBody] UpdateDynamicItemRequest request)
         {
-            var command = new UpdateDynamicItemCommand { DynamicItem = request };
-            var response = await this.mediator.Send(command);
-            if (response.IsSuccess)
+            try
             {
+                var command = new UpdateDynamicItemCommand { DynamicItem = request };
+                await this.mediator.Send(command);
                 return NoContent();
             }
-            return NotFound(response.Errors);
+            catch (DynamicItemNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteDynamicItem(Guid id)
         {
             var command = new DeleteDynamicItemCommand { Id = id };
-            var response = await this.mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return NoContent();
-            }
-            return NotFound(response.Errors);
+            await this.mediator.Send(command);
+            return NoContent();
+            
         }
     }
 }

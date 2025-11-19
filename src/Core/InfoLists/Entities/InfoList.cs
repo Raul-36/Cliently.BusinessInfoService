@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DynamicItems.Models;
+using Core.DynamicItems.Entities;
 
-namespace Core.InfoLists.Models
+namespace Core.InfoLists.Entities
 {
     public class InfoList
     {

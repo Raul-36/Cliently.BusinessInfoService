@@ -4,29 +4,26 @@ using System.Threading.Tasks;
 using Application.Businesses.Commands;
 using Core.Businesses.Repositories.Base;
 using AutoMapper;
-using Application.Common;
+using Application.Businesses.Exceptions;
 
 namespace Application.Businesses.Handlers
 {
-    public class UpdateBusinessNameCommandHandler : IRequestHandler<UpdateBusinessNameCommand, Result<string>>
+    public class UpdateBusinessNameCommandHandler : IRequestHandler<UpdateBusinessNameCommand, string>
     {
         private readonly IBusinessRepository businessRepository;
-        private readonly IMapper mapper;
 
-        public UpdateBusinessNameCommandHandler(IBusinessRepository businessRepository, IMapper mapper)
+        public UpdateBusinessNameCommandHandler(IBusinessRepository businessRepository)
         {
             this.businessRepository = businessRepository;
-            this.mapper = mapper;
         }
 
-        public async Task<Result<string>> Handle(UpdateBusinessNameCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(UpdateBusinessNameCommand request, CancellationToken cancellationToken)
         {
             var newName = await businessRepository.SetNameByIdAsync(request.Business.Id, request.Business.Name);
             if (newName == null)
-            {
-                return Result<string>.Failure("Business not found.");
-            }
-            return Result<string>.Success(newName);
+                throw new BusinessNotFoundException(request.Business.Id);
+            
+            return newName;
         }
     }
 }

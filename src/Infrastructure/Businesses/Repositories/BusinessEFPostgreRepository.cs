@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Businesses.Models;
+using Core.Businesses.Entities;
 using Core.Businesses.Repositories.Base;
-using Core.InfoLists.Models;
-using Core.InfoTexts.Models;
+using Core.InfoLists.Entities;
+using Core.InfoTexts.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 

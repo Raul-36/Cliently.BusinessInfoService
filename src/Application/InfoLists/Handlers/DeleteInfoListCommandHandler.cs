@@ -3,11 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.InfoLists.Commands;
 using Core.InfoLists.Repositories.Base;
-using Application.Common;
 
 namespace Application.InfoLists.Handlers
 {
-    public class DeleteInfoListCommandHandler : IRequestHandler<DeleteInfoListCommand, Result<bool>>
+    public class DeleteInfoListCommandHandler : IRequestHandler<DeleteInfoListCommand>
     {
         private readonly IInfoListRepository infoListRepository;
 
@@ -16,10 +15,10 @@ namespace Application.InfoLists.Handlers
             this.infoListRepository = infoListRepository;
         }
 
-        public async Task<Result<bool>> Handle(DeleteInfoListCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteInfoListCommand request, CancellationToken cancellationToken)
         {
             await infoListRepository.DeleteByIdAsync(request.Id);
-            return Result<bool>.Success(true);
+            return;
         }
     }
 }

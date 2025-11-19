@@ -1,7 +1,7 @@
 using AutoMapper;
 using Application.DynamicItems.DTOs.Requests;
 using Application.DynamicItems.DTOs.Responses;
-using Core.DynamicItems.Models;
+using Core.DynamicItems.Entities;
 
 namespace Application.DynamicItems.MappingProfiles
 {

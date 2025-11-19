@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.InfoLists.Models;
+using Core.InfoLists.Entities;
 
 namespace Core.InfoLists.Repositories.Base
 {

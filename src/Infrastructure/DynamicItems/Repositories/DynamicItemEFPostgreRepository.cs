@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DynamicItems.Models;
+using Core.DynamicItems.Entities;
 using Core.DynamicItems.Repositories.Base;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

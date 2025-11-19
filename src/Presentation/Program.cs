@@ -12,18 +12,15 @@ using Infrastructure.DynamicItems.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
 
-// Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
 
-// Configure PostgreSQL DbContext
+
 builder.Services.AddDbContext<BusinessInfoEFPostgreContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -36,7 +33,7 @@ using var scope = builder.Services.BuildServiceProvider().CreateScope();
         dbContext.Database.Migrate();
     }
 }
-// Register Repositories
+
 builder.Services.AddScoped<IBusinessRepository, BusinessEFPostgreRepository>();
 builder.Services.AddScoped<IInfoListRepository, InfoListEFPostgreRepository>();
 builder.Services.AddScoped<IInfoTextRepository, InfoTextEFPostgreRepository>();
@@ -44,7 +41,6 @@ builder.Services.AddScoped<IDynamicItemRepository, DynamicItemEFPostgreRepositor
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

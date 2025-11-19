@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using Application.DynamicItems.DTOs.Responses;
 using Application.DynamicItems.Queries;
 using Core.DynamicItems.Repositories.Base;
-using Application.Common;
 using AutoMapper;
 
 namespace Application.DynamicItems.Handlers
 {
-    public class GetAllDynamicItemsByListIdQueryHandler : IRequestHandler<GetAllDynamicItemsByListIdQuery, Result<IEnumerable<DynamicItemResponse>>>
+    public class GetAllDynamicItemsByListIdQueryHandler : IRequestHandler<GetAllDynamicItemsByListIdQuery, IEnumerable<DynamicItemResponse>>
     {
         private readonly IDynamicItemRepository dynamicItemRepository;
         private readonly IMapper mapper;
@@ -22,12 +21,11 @@ namespace Application.DynamicItems.Handlers
             this.mapper = mapper;
         }
 
-        public async Task<Result<IEnumerable<DynamicItemResponse>>> Handle(GetAllDynamicItemsByListIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DynamicItemResponse>> Handle(GetAllDynamicItemsByListIdQuery request, CancellationToken cancellationToken)
         {
             var dynamicItems = await dynamicItemRepository.GetAllByListIdAsync(request.ListId);
-
-            var mappedResponse = dynamicItems.Select(di => mapper.Map<DynamicItemResponse>(di));
-            return Result<IEnumerable<DynamicItemResponse>>.Success(mappedResponse);
+            var mappedResponses = this.mapper.Map<IEnumerable<DynamicItemResponse>>(dynamicItems);  
+            return mappedResponses;
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.InfoTexts.Models;
+using Core.InfoTexts.Entities;
 
 namespace Core.InfoTexts.Repositories.Base
 {

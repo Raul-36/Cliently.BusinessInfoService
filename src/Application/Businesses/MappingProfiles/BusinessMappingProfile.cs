@@ -1,7 +1,7 @@
 using AutoMapper;
 using Application.Businesses.DTOs.Requests;
 using Application.Businesses.DTOs.Responses;
-using Core.Businesses.Models;
+using Core.Businesses.Entities;
 
 namespace Application.Businesses.MappingProfiles
 {

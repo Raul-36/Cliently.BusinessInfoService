@@ -5,11 +5,11 @@ using Application.Businesses.DTOs.Responses;
 using Application.Businesses.Queries;
 using Core.Businesses.Repositories.Base;
 using AutoMapper;
-using Application.Common;
+using Application.Businesses.Exceptions;
 
 namespace Application.Businesses.Handlers
 {
-    public class GetBusinessByIdQueryHandler : IRequestHandler<GetBusinessByIdQuery, Result<BusinessResponse>>
+    public class GetBusinessByIdQueryHandler : IRequestHandler<GetBusinessByIdQuery, BusinessResponse>
     {
         private readonly IBusinessRepository businessRepository;
         private readonly IMapper mapper;
@@ -20,16 +20,16 @@ namespace Application.Businesses.Handlers
             this.mapper = mapper;
         }
 
-        public async Task<Result<BusinessResponse>> Handle(GetBusinessByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BusinessResponse> Handle(GetBusinessByIdQuery request, CancellationToken cancellationToken)
         {
             var business = await businessRepository.GetByIdAsync(request.Id);
             if (business == null)
             {
-                return Result<BusinessResponse>.Failure("Business not found.");
+                throw new BusinessNotFoundException(request.Id);
             }
 
             var mappedResponse = this.mapper.Map<BusinessResponse>(business);
-            return Result<BusinessResponse>.Success(mappedResponse);
+            return mappedResponse;
         }
     }
 }

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Users.Models.Base
+namespace Core.InfoTexts.Entities
 {
-    public interface IUser
+    public class InfoText
     {
         public Guid Id { get; set; }
-        public string Email { get; set; }
+        public required string Name { get; set; }
+        public required string Text { get; set; }
         public Guid BusinessId { get; set; }
     }
 }

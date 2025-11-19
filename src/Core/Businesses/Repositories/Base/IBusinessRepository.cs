@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Businesses.Models;
+using Core.Businesses.Entities;
 
 namespace Core.Businesses.Repositories.Base
 {

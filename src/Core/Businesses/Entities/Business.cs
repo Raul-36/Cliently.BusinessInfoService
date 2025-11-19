@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DynamicItems.Models;
-using Core.InfoLists.Models;
-using Core.InfoTexts.Models;
+using Core.DynamicItems.Entities;
+using Core.InfoLists.Entities;
+using Core.InfoTexts.Entities;
 
-namespace Core.Businesses.Models
+namespace Core.Businesses.Entities
 {
     public class Business
     {

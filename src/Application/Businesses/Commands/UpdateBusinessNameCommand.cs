@@ -1,10 +1,9 @@
 using MediatR;
 using Application.Businesses.DTOs.Requests;
-using Application.Common;
 
 namespace Application.Businesses.Commands
 {
-    public class UpdateBusinessNameCommand : IRequest<Result<string>>
+    public class UpdateBusinessNameCommand : IRequest<string>
     {
         public required UpdateBusinessRequest Business { get; set; }
     }

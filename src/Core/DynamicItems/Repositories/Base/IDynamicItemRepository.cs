@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DynamicItems.Models;
+using Core.DynamicItems.Entities;
 
 namespace Core.DynamicItems.Repositories.Base
 {

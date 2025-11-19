@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Application.InfoTexts.Commands;
 using Application.InfoTexts.DTOs.Responses;
 using Core.InfoTexts.Repositories.Base;
-using Core.InfoTexts.Models;
+using Core.InfoTexts.Entities;
 using AutoMapper;
-using Application.Common;
+using Application.InfoTexts.Exceptions;
 
 namespace Application.InfoTexts.Handlers
 {
-    public class UpdateInfoTextCommandHandler : IRequestHandler<UpdateInfoTextCommand, Result<InfoTextResponse>>
+    public class UpdateInfoTextCommandHandler : IRequestHandler<UpdateInfoTextCommand, InfoTextResponse>
     {
         private readonly IInfoTextRepository infoTextRepository;
         private readonly IMapper mapper;
@@ -21,7 +21,7 @@ namespace Application.InfoTexts.Handlers
             this.mapper = mapper;
         }
 
-        public async Task<Result<InfoTextResponse>> Handle(UpdateInfoTextCommand request, CancellationToken cancellationToken)
+        public async Task<InfoTextResponse> Handle(UpdateInfoTextCommand request, CancellationToken cancellationToken)
         {
             var infoText = this.mapper.Map<InfoText>(request.InfoText);
 
@@ -29,10 +29,10 @@ namespace Application.InfoTexts.Handlers
 
             if (updatedInfoText == null)
             {
-                return Result<InfoTextResponse>.Failure("InfoText not found.");
+                throw new InfoTextNotFoundException(infoText.Id);
             }
             var mappedResponse = this.mapper.Map<InfoTextResponse>(updatedInfoText);
-            return Result<InfoTextResponse>.Success(mappedResponse);
+            return mappedResponse;
         }
     }
 }

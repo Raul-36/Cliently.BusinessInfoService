@@ -3,11 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.InfoTexts.Commands;
 using Core.InfoTexts.Repositories.Base;
-using Application.Common;
 
 namespace Application.InfoTexts.Handlers
 {
-    public class DeleteInfoTextCommandHandler : IRequestHandler<DeleteInfoTextCommand, Result<bool>>
+    public class DeleteInfoTextCommandHandler : IRequestHandler<DeleteInfoTextCommand>
     {
         private readonly IInfoTextRepository infoTextRepository;
 
@@ -16,10 +15,10 @@ namespace Application.InfoTexts.Handlers
             this.infoTextRepository = infoTextRepository;
         }
 
-        public async Task<Result<bool>> Handle(DeleteInfoTextCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteInfoTextCommand request, CancellationToken cancellationToken)
         {
             await infoTextRepository.DeleteByIdAsync(request.Id);
-            return Result<bool>.Success(true);
+            return;
         }
     }
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using Application.InfoTexts.DTOs.Requests;
 using Application.InfoTexts.DTOs.Responses;
-using Core.InfoTexts.Models;
+using Core.InfoTexts.Entities;
 
 namespace Application.InfoTexts.MappingProfiles
 {
