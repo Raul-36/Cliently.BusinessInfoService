@@ -6,6 +6,6 @@ namespace Application.InfoTexts.Commands
 {
     public class UpdateInfoTextCommand : IRequest<InfoTextResponse>
     {
-        public UpdateInfoTextRequest InfoText { get; set; }
+        public required UpdateInfoTextRequest InfoText { get; set; }
     }
 }

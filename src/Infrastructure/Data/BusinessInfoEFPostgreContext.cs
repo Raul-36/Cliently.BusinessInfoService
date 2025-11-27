@@ -8,6 +8,7 @@ using Core.Businesses.Entities;
 using Core.DynamicItems.Entities;
 using Core.InfoLists.Entities;
 using Core.InfoTexts.Entities;
+using Core.Users.Entities; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -17,10 +18,11 @@ using Microsoft.VisualBasic;
 namespace Infrastructure.Data;
 public class BusinessInfoEFPostgreContext : DbContext
 {
-    public DbSet<Business> Businesses { get; set; } = null!;
-    public DbSet<InfoText> InfoTexts { get; set; } = null!;
-    public DbSet<InfoList> InfoLists { get; set; } = null!;
-    public DbSet<DynamicItem> DynamicItems { get; set; } = null!;
+    public DbSet<Business> Businesses { get; set; } 
+    public DbSet<InfoText> InfoTexts { get; set; } 
+    public DbSet<InfoList> InfoLists { get; set; } 
+    public DbSet<DynamicItem> DynamicItems { get; set; } 
+    public DbSet<User> Users { get; set; }  
 
     public BusinessInfoEFPostgreContext(DbContextOptions<BusinessInfoEFPostgreContext> options)
         : base(options)
@@ -29,6 +31,17 @@ public class BusinessInfoEFPostgreContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // User Entity Configuration
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne<Business>()
+                .WithOne()
+                .HasForeignKey<Business>(b => b.Id)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         //DynamicItem 
         {
             var serializerOptions = new JsonSerializerOptions

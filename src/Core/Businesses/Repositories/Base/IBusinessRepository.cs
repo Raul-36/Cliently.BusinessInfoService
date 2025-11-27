@@ -9,6 +9,7 @@ namespace Core.Businesses.Repositories.Base
     public interface IBusinessRepository
     {
         public Task<Business?> GetByIdAsync(Guid id);
+        public Task<Business?> GetByUserIdAsync(Guid id);
         public Task<IEnumerable<Business>> GetAllAsync();
         public Task<Business> AddAsync(Business business);
         public Task<string?> SetNameByIdAsync(Guid id, string newName);

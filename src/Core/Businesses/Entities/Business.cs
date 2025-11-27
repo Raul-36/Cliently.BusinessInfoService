@@ -12,6 +12,7 @@ namespace Core.Businesses.Entities
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
+        public Guid UserId { get; set; }
         public IEnumerable<InfoList> Lists { get; set; } = Enumerable.Empty<InfoList>();
         public IEnumerable<InfoText> Texts { get; set; } = Enumerable.Empty<InfoText>();
     }

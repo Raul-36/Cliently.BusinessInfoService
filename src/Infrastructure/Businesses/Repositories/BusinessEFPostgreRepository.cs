@@ -48,6 +48,7 @@ namespace Infrastructure.Businesses.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    UserId = x.UserId,
                     Lists = null!,
                     Texts = null!
 
@@ -64,6 +65,7 @@ namespace Infrastructure.Businesses.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    UserId = x.UserId,
                     Lists = x.Lists.ToList(),
                     Texts = x.Texts.Select(t => new InfoText()
                     {
@@ -75,16 +77,38 @@ namespace Infrastructure.Businesses.Repositories
                 })
                 .FirstOrDefaultAsync();
             if (entity == null)
-                return null!;
+                return null;
 
             return entity;
+        }
+
+        public async Task<Business?> GetByUserIdAsync(Guid id)
+        {
+            return await context.Businesses
+                .AsNoTracking()
+                .Where(x => x.UserId == id)
+                .Select(x => new Business()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UserId = x.UserId,
+                    Lists = x.Lists.ToList(),
+                    Texts = x.Texts.Select(t => new InfoText()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Text = string.Empty,
+                        BusinessId = t.BusinessId
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<string?> SetNameByIdAsync(Guid id, string newName)
         {
             var entity = await context.Businesses.FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
-                return null!;
+                return null;
 
             entity.Name = newName;
             await context.SaveChangesAsync();

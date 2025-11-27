@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Users.Entities.Base
+namespace Application.Users.Events
 {
-    public interface IUser
+    public class UserDeletedEvent
     {
         public Guid Id { get; set; }
-        public string Email { get; set; }
-        public Guid BusinessId { get; set; }
     }
 }
