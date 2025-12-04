@@ -8,5 +8,6 @@ namespace Application.InfoLists.Queries
     public class GetAllInfoListsByBusinessIdQuery : IRequest<IEnumerable<InfoListResponse>>
     {
         public Guid BusinessId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

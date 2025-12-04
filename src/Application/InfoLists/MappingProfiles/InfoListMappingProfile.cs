@@ -10,7 +10,7 @@ namespace Application.InfoLists.MappingProfiles
         public InfoListMappingProfile()
         {
             CreateMap<CreateInfoListRequest, InfoList>();
-            CreateMap<UpdateInfoListNameRequest, InfoList>();
+            CreateMap<UpdateInfoListRequest, InfoList>();
             CreateMap<InfoList, InfoListResponse>();
         }
     }

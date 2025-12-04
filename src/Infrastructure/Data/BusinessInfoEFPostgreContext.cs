@@ -38,7 +38,7 @@ public class BusinessInfoEFPostgreContext : DbContext
 
             entity.HasOne<Business>()
                 .WithOne()
-                .HasForeignKey<Business>(b => b.Id)
+                .HasForeignKey<Business>(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

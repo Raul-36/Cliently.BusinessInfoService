@@ -7,5 +7,6 @@ namespace Application.InfoTexts.Queries
     public class GetInfoTextByIdQuery : IRequest<InfoTextResponse>
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
     }
 }

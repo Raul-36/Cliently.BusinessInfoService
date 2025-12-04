@@ -40,8 +40,31 @@ namespace Infrastructure.Users.Consumers
             if (connection != null && channel != null && channel.IsOpen)
                 return;
 
-            connection = await factory.CreateConnectionAsync();
-            channel = await connection.CreateChannelAsync();
+            const int maxAttempts = 10;
+            var delay = TimeSpan.FromSeconds(3);
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    connection = await factory.CreateConnectionAsync();
+                    channel = await connection.CreateChannelAsync();
+
+                    if (channel != null && channel.IsOpen)
+                    {
+                        Console.WriteLine($"[UserDeletedConsumer] Connected to RabbitMQ on attempt {attempt}.");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[UserDeletedConsumer] Failed to connect to RabbitMQ on attempt {attempt}: {ex.Message}");
+                }
+
+                await Task.Delay(delay);
+            }
+
+            throw new InvalidOperationException("[UserDeletedConsumer] Could not connect to RabbitMQ after multiple attempts.");
         }
 
         public async Task ExecuteAsync()
@@ -67,6 +90,10 @@ namespace Infrastructure.Users.Consumers
                 {
                     var content = Encoding.UTF8.GetString(deliverEventArgs.Body.ToArray());
                     var deletedUser = JsonSerializer.Deserialize<UserDeletedEvent>(content);
+                    if (deletedUser == null)
+                    {
+                        throw new InvalidOperationException("Failed to deserialize UserDeletedEvent.");
+                    }
                     
                     Console.WriteLine($"Received: Delete user ({content})");
 

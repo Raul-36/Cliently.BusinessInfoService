@@ -7,5 +7,6 @@ namespace Application.InfoLists.Queries
     public class GetInfoListByIdQuery : IRequest<InfoListResponse>
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
     }
 }

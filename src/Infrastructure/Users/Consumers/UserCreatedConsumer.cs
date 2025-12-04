@@ -31,7 +31,6 @@ namespace Infrastructure.Users.Consumers
             this.mediator = mediator;
             this.mapper = mapper;
 
-
             queueName = uqOptions.Value.CreateUser;
 
             factory = new ConnectionFactory
@@ -47,8 +46,30 @@ namespace Infrastructure.Users.Consumers
             if (connection != null && channel != null && channel.IsOpen)
                 return;
 
-            connection = await factory.CreateConnectionAsync();
-            channel = await connection.CreateChannelAsync();
+            const int maxAttempts = 10;
+            var delay = TimeSpan.FromSeconds(3);
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    connection = await factory.CreateConnectionAsync();
+                    channel = await connection.CreateChannelAsync();
+
+                    if (channel != null && channel.IsOpen)
+                    {
+                        Console.WriteLine($"[UserCreatedConsumer] Connected to RabbitMQ on attempt {attempt}.");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[UserCreatedConsumer] Failed to connect to RabbitMQ on attempt {attempt}: {ex.Message}");
+                }
+                await Task.Delay(delay);
+            }
+
+            throw new InvalidOperationException("[UserCreatedConsumer] Could not connect to RabbitMQ after multiple attempts.");
         }
 
         public async Task ExecuteAsync()
@@ -78,7 +99,7 @@ namespace Infrastructure.Users.Consumers
                     Console.WriteLine($"Received: Create user ({content})");
                     
                     var request = mapper.Map<CreateUserRequest>(createdUser);
-                    var command = new CreateUserCommand{ Request = request };
+                    var command = new CreateUserCommand{ CreateUser = request };
                     var response = await mediator.Send(command);
                     Console.WriteLine($"Creted: user({response.Id})");
                 }

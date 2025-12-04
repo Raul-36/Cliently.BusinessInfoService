@@ -5,5 +5,6 @@ namespace Application.InfoTexts.DTOs.Requests
         public required string Name { get; set; }
         public required string Text { get; set; }
         public Guid BusinessId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

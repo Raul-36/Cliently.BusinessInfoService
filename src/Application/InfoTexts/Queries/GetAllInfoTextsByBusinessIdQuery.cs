@@ -8,5 +8,6 @@ namespace Application.InfoTexts.Queries
     public class GetAllInfoTextsByBusinessIdQuery : IRequest<IEnumerable<InfoTextResponse>>
     {
         public Guid BusinessId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

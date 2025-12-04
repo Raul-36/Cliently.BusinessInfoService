@@ -5,15 +5,20 @@ using Application.DynamicItems.DTOs.Requests;
 using Application.DynamicItems.DTOs.Responses;
 using Application.DynamicItems.Queries;
 using Application.DynamicItems.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using Presentation.Consts;
+using Presentation.Extensions;
+using Application.InfoLists.Exceptions;
 
 
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = DefaultRoles.User)]
     public class DynamicItemsController : ControllerBase
     {
-        private IMediator mediator;
+        private readonly IMediator mediator;
 
         public DynamicItemsController(IMediator mediator)
         {
@@ -23,9 +28,21 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateDynamicItem([FromBody] CreateDynamicItemRequest request)
         {
-            var command = new CreateDynamicItemCommand { DynamicItem = request };
-            var response = await this.mediator.Send(command);
-            return Ok(response);
+            try
+            {
+                request.UserId = this.GetUserId();
+                var command = new CreateDynamicItemCommand { DynamicItem = request };
+                var response = await this.mediator.Send(command);
+                return Ok(response);
+            }
+            catch (InfoListNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
@@ -33,7 +50,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var query = new GetDynamicItemByIdQuery { Id = id };
+                var query = new GetDynamicItemByIdQuery { Id = id, UserId = this.GetUserId() };
                 var response = await this.mediator.Send(query);
                 return Ok(response);
             }
@@ -41,14 +58,29 @@ namespace Presentation.Controllers
             {
                 return NotFound(ex.Message);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpGet("ByList/{listId}")]
         public async Task<IActionResult> GetAllDynamicItemsByListId(Guid listId)
         {
-            var query = new GetAllDynamicItemsByListIdQuery { ListId = listId };
-            var response = await this.mediator.Send(query);
-            return Ok(response);
+            try
+            {
+                var query = new GetAllDynamicItemsByListIdQuery { ListId = listId, UserId = this.GetUserId() };
+                var response = await this.mediator.Send(query);
+                return Ok(response);
+            }
+            catch (InfoListNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpPut]
@@ -56,6 +88,7 @@ namespace Presentation.Controllers
         {
             try
             {
+                request.UserId = this.GetUserId();
                 var command = new UpdateDynamicItemCommand { DynamicItem = request };
                 await this.mediator.Send(command);
                 return NoContent();
@@ -64,16 +97,30 @@ namespace Presentation.Controllers
             {
                 return NotFound(ex.Message);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
             
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDynamicItem(Guid id)
         {
-            var command = new DeleteDynamicItemCommand { Id = id };
-            await this.mediator.Send(command);
-            return NoContent();
-            
+            try
+            {
+                var command = new DeleteDynamicItemCommand { Id = id, UserId = this.GetUserId() };
+                await this.mediator.Send(command);
+                return NoContent();
+            }
+            catch (DynamicItemNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
     }
 }

@@ -3,5 +3,9 @@ using Application.Businesses.DTOs.Responses;
 
 namespace Application.Businesses.Queries
 {
-    public record GetBusinessByIdQuery(Guid Id) : IRequest<BusinessResponse>;
+    public class GetBusinessByIdQuery : IRequest<BusinessResponse>
+    {
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+    }
 }

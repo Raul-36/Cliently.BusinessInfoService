@@ -22,7 +22,7 @@ namespace Application.Users.Handlers
 
         public async Task<UserResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var user = mapper.Map<User>(request.Request);
+            var user = mapper.Map<User>(request.CreateUser);
             await userRepository.AddAsync(user);
             return mapper.Map<UserResponse>(user);
         }

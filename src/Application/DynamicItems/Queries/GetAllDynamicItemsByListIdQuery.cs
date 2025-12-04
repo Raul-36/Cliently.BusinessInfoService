@@ -8,5 +8,6 @@ namespace Application.DynamicItems.Queries
     public class GetAllDynamicItemsByListIdQuery : IRequest<IEnumerable<DynamicItemResponse>>
     {
         public Guid ListId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

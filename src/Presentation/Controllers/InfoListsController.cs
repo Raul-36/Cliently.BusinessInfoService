@@ -5,15 +5,23 @@ using Application.InfoLists.DTOs.Requests;
 using Application.InfoLists.DTOs.Responses;
 using Application.InfoLists.Queries;
 using Application.InfoLists.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using Presentation.Consts;
+using System.Security.Claims;
+using System;
+using Presentation.Extensions;
+using Core.Businesses.Entities;
+using Application.Businesses.Exceptions;
 
 
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class InfoListsController : ControllerBase
     {
-        private IMediator mediator;
+        private readonly IMediator mediator;
 
         public InfoListsController(IMediator mediator)
         {
@@ -21,11 +29,24 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = DefaultRoles.User)]
         public async Task<IActionResult> CreateInfoList([FromBody] CreateInfoListRequest request)
         {
-            var command = new CreateInfoListCommand { InfoList = request };
-            var response = await this.mediator.Send(command);
-            return Ok(response);
+            try
+            {
+                request.UserId = this.GetUserId();
+                var command = new CreateInfoListCommand { InfoList = request };
+                var response = await mediator.Send(command);
+                return Ok(response);
+            }
+            catch (BusinessNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
             
         }
 
@@ -34,47 +55,77 @@ namespace Presentation.Controllers
         {
             try
             {
-                var query = new GetInfoListByIdQuery { Id = id };
-                var response = await this.mediator.Send(query);
+                var query = new GetInfoListByIdQuery { Id = id, UserId = this.GetUserId() }; 
+                var response = await mediator.Send(query);
                 return Ok(response);
             }
             catch (InfoListNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpGet("ByBusinessId/{businessId}")]
         public async Task<IActionResult> GetAllInfoListsByBusinessId(Guid businessId)
         {
-            var query = new GetAllInfoListsByBusinessIdQuery { BusinessId = businessId };
-            var response = await this.mediator.Send(query);
-            return Ok(response);
+            try
+            {
+                var query = new GetAllInfoListsByBusinessIdQuery { BusinessId = businessId, UserId = this.GetUserId() }; 
+                var response = await mediator.Send(query);
+                return Ok(response);
+            }
+            catch (BusinessNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
             
         }
 
         [HttpPatch("name")]
-        public async Task<IActionResult> UpdateInfoListName([FromBody] UpdateInfoListNameRequest request)
+        public async Task<IActionResult> UpdateInfoListName([FromBody] UpdateInfoListRequest request)
         {
-            
             try
             {
+                request.UserId = this.GetUserId(); 
                 var command = new UpdateInfoListNameCommand { InfoList = request };
-                await this.mediator.Send(command);
+                await mediator.Send(command);
                 return NoContent();
             }
             catch (InfoListNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInfoList(Guid id)
         {
-            var command = new DeleteInfoListCommand { Id = id };
-            await this.mediator.Send(command);
-            return NoContent();
+            try
+            {
+                var command = new DeleteInfoListCommand { Id = id, UserId = this.GetUserId() }; 
+                await mediator.Send(command);
+                return NoContent();
+            }
+            catch (InfoListNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
     }
 }

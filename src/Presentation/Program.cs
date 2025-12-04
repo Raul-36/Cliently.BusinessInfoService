@@ -15,8 +15,16 @@ using Application.Common.Messaging.Consumers.Base;
 using Infrastructure.Users.Consumers;
 using Core.Users.Repositories;
 using Infrastructure.Users.Repositories;
+using Presentation.Options;
+using Presentation.Extensions;
+using Application.Users.Services.Base;
+using Infrastructure.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.InitSwagger();
+builder.Services.InitAuth(builder.Configuration);
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -28,16 +36,18 @@ builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
 
 builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.Configure<UserQueuesOptions>(builder.Configuration.GetSection("UserQueues"));
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtSettings"));
 
 builder.Services.AddDbContext<BusinessInfoEFPostgreContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.AddScoped<IUserRepository, UserEFPostgreRepository>();
-builder.Services.AddScoped<IBusinessRepository, BusinessEFPostgreRepository>();
-builder.Services.AddScoped<IInfoListRepository, InfoListEFPostgreRepository>();
-builder.Services.AddScoped<IInfoTextRepository, InfoTextEFPostgreRepository>();
-builder.Services.AddScoped<IDynamicItemRepository, DynamicItemEFPostgreRepository>();
+builder.Services.AddScoped<IAccessCheckService, AccessCheckService>();
+builder.Services.AddTransient<IUserRepository, UserEFPostgreRepository>();
+builder.Services.AddTransient<IBusinessRepository, BusinessEFPostgreRepository>();
+builder.Services.AddTransient<IInfoListRepository, InfoListEFPostgreRepository>();
+builder.Services.AddTransient<IInfoTextRepository, InfoTextEFPostgreRepository>();
+builder.Services.AddTransient<IDynamicItemRepository, DynamicItemEFPostgreRepository>();
 
 builder.Services.AddScoped<UserCreatedConsumer>();
 builder.Services.AddScoped<UserDeletedConsumer>();
@@ -102,3 +112,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

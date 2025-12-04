@@ -8,5 +8,6 @@ namespace Core.Users.Repositories
     {
         Task AddAsync(User user);
         Task DeleteAsync(Guid userId);
+        Task<User?> GetByIdAsync(Guid userId);
     }
 }

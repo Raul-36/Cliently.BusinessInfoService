@@ -4,5 +4,6 @@ namespace Application.InfoLists.DTOs.Requests
     {
         public required string Name { get; set; }
         public required Guid BusinessId { get; set; }
+        public required Guid UserId { get; set; }
     }
 }

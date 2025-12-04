@@ -5,6 +5,6 @@ namespace Application.InfoLists.Commands
 {
     public class UpdateInfoListNameCommand : IRequest<string>
     {
-        public required UpdateInfoListNameRequest InfoList { get; set; }
+        public required UpdateInfoListRequest InfoList { get; set; }
     }
 }
