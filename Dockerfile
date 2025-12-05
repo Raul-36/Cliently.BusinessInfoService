@@ -14,8 +14,8 @@ COPY . .
 
 WORKDIR /src/src/Presentation
 
-
 RUN dotnet publish "Presentation.csproj" -c Release -o /app/publish 
+
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
