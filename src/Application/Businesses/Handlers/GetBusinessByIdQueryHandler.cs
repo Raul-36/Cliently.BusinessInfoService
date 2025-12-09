@@ -23,7 +23,7 @@ namespace Application.Businesses.Handlers
             this.mapper = mapper;
             this.accessCheckService = accessCheckService;
         }
-
+        
         public async Task<BusinessResponse> Handle(GetBusinessByIdQuery request, CancellationToken cancellationToken)
         {
             if (!accessCheckService.ToBusiness(request.UserId, request.Id))

@@ -66,6 +66,25 @@ namespace Presentation.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+        [HttpGet("byUser")]
+        public async Task<IActionResult> GetBusinessByUserId()
+        {
+            try
+            {
+                var query = new GetBusinessByUserIdQuery{Id = this.GetUserId()};
+                var response = await this.mediator.Send(query);
+                return Ok(response);
+            }
+            catch (BusinessNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Authorize(Roles = DefaultRoles.Admin)]
         public async Task<IActionResult> GetAllBusinesses()
